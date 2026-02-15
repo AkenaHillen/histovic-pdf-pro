@@ -1,0 +1,32 @@
+{
+  "name": "pdf-tools",
+  "version": "1.0.0",
+  "description": "Histovic PDF Professional Tools",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": [
+    "pdf",
+    "histovic",
+    "merge"
+  ],
+  "author": "Akena Hillen",
+  "license": "ISC",
+  "dependencies": {
+    "next": "latest",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^4.4.168",
+    "react": "latest",
+    "react-dom": "latest"
+  },
+  "devDependencies": {
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  }
+}

@@ -1,0 +1,187 @@
+[00:00:57.396] Server  LOG     ✓ Ready in 47.9s
+[00:01:00.463] Server  LOG     ○ Compiling / ...
+[00:01:24.953] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:04:03.124] Server  LOG     ✓ Compiled in 52.1s
+[00:04:04.588] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:07:52.729] Server  LOG     ✓ Compiled in 2.7s
+[00:07:54.880] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:08:36.342] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:00.290] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:09:17.955] Server  LOG     ✓ Compiled in 257ms
+[00:09:19.155] Server  LOG     ✓ Finished filesystem cache database compaction in 15.0s
+[00:18:22.199] Server  LOG     ✓ Compiled in 7.7s
+[00:19:44.475] Browser WARN    Warning: Setting up fake worker.
+[00:19:44.475] Browser ERROR   {}
+[00:24:55.637] Server  LOG     ✓ Compiled in 183ms
+[00:26:07.249] Browser ERROR   Histovic Error: {}
+[00:26:13.806] Server  WARN    Warning: Please use the `legacy` build in Node.js environments.
+[00:26:15.398] Server  ERROR   ⨯ ReferenceError: DOMMatrix is not defined
+[00:26:16.861] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:26:56.043] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:27:44.680] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:27:56.184] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:28:09.903] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:30:14.042] Server  LOG     ✓ Compiled in 598ms
+[00:31:02.139] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:31:04.770] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:32:16.188] Server  ERROR   ⨯ Error: The default export is not a React Component in "/layout"
+[00:32:16.595] Server  ERROR   ⨯ Error: The default export is not a React Component in "/layout"
+[00:32:19.607] Server  LOG     ○ Compiling /_error ...
+[00:32:25.457] Browser ERROR   uncaughtError: Error: The default export is not a React Component in "/layout"
+[00:32:33.172] Server  LOG     ✓ Compiled in 154ms
+[00:33:02.941] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:33:21.736] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:33:27.373] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:33:40.859] Browser ERROR   Histovic Error: {"details":"Error: The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","message":"The API version \"5.4.624\" does not match the Worker version \"4.4.168\".","name":"UnknownErrorException"}
+[00:38:32.292] Server  WARN    ⚠ ./app/page.tsx:27:32
+Module not found: Can't resolve 'pdfjs-dist/legacy/build/pdf.mjs'
+  25 |       if (mode === 'image') {
+  26 |         // --- FIXED: Using Legacy Build to avoid DOMMatrix & Version Mismatch ---
+> 27 |         const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  28 |         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
+  29 |
+  30 |         const arrayBuffer = await files[0].arrayBuffer();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:38:43.070] Server  LOG     ✓ Compiled in 9s
+[00:38:43.508] Server  WARN    ⚠ ./app/page.tsx:27:32
+Module not found: Can't resolve 'pdfjs-dist/legacy/build/pdf.mjs'
+  25 |       if (mode === 'image') {
+  26 |         // --- FIXED: Using Legacy Build to avoid DOMMatrix & Version Mismatch ---
+> 27 |         const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  28 |         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
+  29 |
+  30 |         const arrayBuffer = await files[0].arrayBuffer();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:38:46.256] Server  WARN    ⚠ ./app/page.tsx:27:32
+Module not found: Can't resolve 'pdfjs-dist/legacy/build/pdf.mjs'
+  25 |       if (mode === 'image') {
+  26 |         // --- FIXED: Using Legacy Build to avoid DOMMatrix & Version Mismatch ---
+> 27 |         const pdfjsLib = await import('pdfjs-dist/legacy/build/pdf.mjs');
+     |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  28 |         pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@4.4.168/build/pdf.worker.min.mjs`;
+  29 |
+  30 |         const arrayBuffer = await files[0].arrayBuffer();
+
+
+
+Import traces:
+  Client Component Browser:
+    ./app/page.tsx [Client Component Browser]
+    ./app/page.tsx [Server Component]
+
+  Client Component SSR:
+    ./app/page.tsx [Client Component SSR]
+    ./app/page.tsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+[00:38:46.345] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:39:25.984] Server  LOG     ✓ Finished filesystem cache database compaction in 40s
+[00:39:27.218] Server  LOG     ✓ Finished writing to filesystem cache in 27.8s
+[00:42:21.005] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:45:11.627] Server  LOG     ✓ Compiled in 90ms
+[00:46:13.186] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:51:59.308] Server  LOG     ✓ Compiled in 231ms
+[00:52:10.593] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:56:05.529] Server  WARN    ⚠ Fast Refresh had to perform a full reload when ./app/page.tsx changed. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[00:56:05.917] Server  LOG     ✓ Compiled in 309ms
+[00:56:06.797] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:56:14.688] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:56:17.653] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:19.187] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:20.646] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:21.693] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:24.022] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:25.484] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:28.453] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:33.128] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:33.559] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:34.125] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:34.480] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:34.887] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:56:58.522] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:02.409] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:04.841] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:08.323] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:15.596] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:16.562] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:17.190] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:18.405] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:28.262] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:28.830] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:29.639] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:30.470] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[00:57:31.335] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:02:20.403] Server  LOG     ✓ Compiled in 153ms
+[01:02:32.680] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:02:39.016] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:02:40.049] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:02:40.683] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:02:44.499] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:03:02.435] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:03:03.316] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:03:04.700] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:03:05.203] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:03:06.033] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:08:35.579] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:08:36.879] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:08:37.962] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:08:39.034] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:20:59.634] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:21:00.570] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:21:01.755] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:21:02.488] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:21:03.271] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:21:03.887] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:22:48.864] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:22:50.454] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:22:52.119] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:22:53.819] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:25:25.750] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:25:29.988] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:25:31.172] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:25:32.402] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:25:34.417] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:25:37.782] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:32.392] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[01:34:34.480] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:35.724] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:36.445] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:37.061] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:37.734] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:49.079] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:49.878] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:50.428] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:50.909] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
+[01:34:51.543] Browser ERROR   %s a style property during rerender (%s) when a conflicting property is set (%s) can lead to styling bugs. To avoid this, don't mix shorthand and non-shorthand properties for the same value; instead, replace the shorthand with separate values. Removing backgroundColor background
