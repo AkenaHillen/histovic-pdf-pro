@@ -10,7 +10,7 @@ module.exports = mod;
 
 __turbopack_context__.s([
     "default",
-    ()=>HistovicMasterApp
+    ()=>HistovicPdfPro
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react-jsx-dev-runtime.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
@@ -123,7 +123,7 @@ const translations = {
         success: "成功！文件已就绪"
     }
 };
-function HistovicMasterApp() {
+function HistovicPdfPro() {
     const [lang, setLang] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])('en');
     const [files, setFiles] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [processing, setProcessing] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
@@ -133,6 +133,7 @@ function HistovicMasterApp() {
     const t = translations[lang];
     const processPDF = async ()=>{
         setProcessing(true);
+        setSuccess(false);
         try {
             if (mode === 'image' || mode === 'text') {
                 const pdfjsLib = await __turbopack_context__.A("[project]/node_modules/pdfjs-dist/legacy/build/pdf.mjs [app-ssr] (ecmascript, async loader)");
@@ -142,20 +143,19 @@ function HistovicMasterApp() {
                     data: arrayBuffer
                 }).promise;
                 if (mode === 'text') {
-                    let textContent = "";
+                    let text = "";
                     for(let i = 1; i <= pdf.numPages; i++){
                         const page = await pdf.getPage(i);
                         const content = await page.getTextContent();
-                        textContent += content.items.map((item)=>item.str).join(" ") + "\n\n";
+                        text += content.items.map((item)=>item.str).join(" ") + "\n\n";
                     }
-                    // FIX: Wrap text in array for Blob compatibility
                     downloadFile([
-                        textContent
+                        text
                     ], "text/plain", "Histovic_Text.txt");
                 } else {
                     const page = await pdf.getPage(1);
                     const viewport = page.getViewport({
-                        scale: 2.0
+                        scale: 3.0
                     });
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
@@ -166,7 +166,7 @@ function HistovicMasterApp() {
                             canvasContext: ctx,
                             viewport
                         }).promise;
-                        triggerDownload(canvas.toDataURL('image/jpeg'), "Histovic_HD.jpg");
+                        triggerDownload(canvas.toDataURL('image/jpeg', 1.0), "Histovic_HD.jpg");
                     }
                 }
             } else {
@@ -181,15 +181,15 @@ function HistovicMasterApp() {
                     }
                 } else if (mode === 'split') {
                     const indices = [];
-                    pageRange.split(',').forEach((p)=>{
-                        if (p.includes('-')) {
-                            const [s, e] = p.split('-').map((n)=>parseInt(n.trim()) - 1);
-                            for(let i = s; i <= e; i++)indices.push(i);
+                    pageRange.split(',').forEach((part)=>{
+                        if (part.includes('-')) {
+                            const [start, end] = part.split('-').map((n)=>parseInt(n.trim()) - 1);
+                            for(let i = start; i <= end; i++)indices.push(i);
                         } else {
-                            indices.push(parseInt(p.trim()) - 1);
+                            indices.push(parseInt(part.trim()) - 1);
                         }
                     });
-                    const pages = await pdfDoc.copyPages(src, indices.filter((i)=>i >= 0 && i < src.getPageCount()));
+                    const pages = await pdfDoc.copyPages(src, indices.filter((n)=>n >= 0 && n < src.getPageCount()));
                     pages.forEach((p)=>pdfDoc.addPage(p));
                 } else {
                     const pages = await pdfDoc.copyPages(src, src.getPageIndices());
@@ -198,7 +198,6 @@ function HistovicMasterApp() {
                 const bytes = await pdfDoc.save({
                     useObjectStreams: true
                 });
-                // FIX: The specific Vercel Uint8Array error fix is here:
                 downloadFile([
                     bytes.buffer
                 ], "application/pdf", `Histovic_${mode}.pdf`);
@@ -206,13 +205,11 @@ function HistovicMasterApp() {
             setSuccess(true);
             setFiles([]);
         } catch (e) {
-            console.error(e);
-            alert("Error processing file. Ensure you have valid page ranges.");
+            alert("Error: Check your page range or PDF file.");
         } finally{
             setProcessing(false);
         }
     };
-    // FIX: Robust download logic for Vercel/TypeScript
     const downloadFile = (data, type, name)=>{
         const blob = new Blob(data, {
             type
@@ -225,9 +222,7 @@ function HistovicMasterApp() {
         const a = document.createElement('a');
         a.href = url;
         a.download = name;
-        document.body.appendChild(a);
         a.click();
-        document.body.removeChild(a);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         style: shell,
@@ -246,41 +241,145 @@ function HistovicMasterApp() {
                                 children: "PRO"
                             }, void 0, false, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 119,
+                                lineNumber: 113,
                                 columnNumber: 36
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 119,
+                        lineNumber: 113,
                         columnNumber: 9
                     }, this),
-                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
-                        value: lang,
-                        onChange: (e)=>setLang(e.target.value),
-                        style: langPicker,
-                        children: Object.keys(translations).map((l)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
-                                value: l,
-                                children: l.toUpperCase()
-                            }, l, false, {
-                                fileName: "[project]/app/page.tsx",
-                                lineNumber: 121,
-                                columnNumber: 47
-                            }, this))
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: {
+                            display: 'flex',
+                            gap: '15px',
+                            alignItems: 'center'
+                        },
+                        children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("select", {
+                            value: lang,
+                            onChange: (e)=>setLang(e.target.value),
+                            style: langPicker,
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "en",
+                                    children: "EN"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 116,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "es",
+                                    children: "ES"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 117,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "fr",
+                                    children: "FR"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 118,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "de",
+                                    children: "DE"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 119,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "hi",
+                                    children: "HI"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 120,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "ar",
+                                    children: "AR"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 121,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "pt",
+                                    children: "PT"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 122,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "ru",
+                                    children: "RU"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 123,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "ja",
+                                    children: "JA"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 124,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("option", {
+                                    value: "zh",
+                                    children: "ZH"
+                                }, void 0, false, {
+                                    fileName: "[project]/app/page.tsx",
+                                    lineNumber: 125,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/app/page.tsx",
+                            lineNumber: 115,
+                            columnNumber: 11
+                        }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 120,
+                        lineNumber: 114,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 118,
+                lineNumber: 112,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 style: contentBody,
                 children: [
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                        style: heroText,
+                        children: [
+                            mode.toUpperCase(),
+                            " PDF"
+                        ]
+                    }, void 0, true, {
+                        fileName: "[project]/app/page.tsx",
+                        lineNumber: 131,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                        style: subHero,
+                        children: "The fastest local-first PDF tools for Histovic Studios."
+                    }, void 0, false, {
+                        fileName: "[project]/app/page.tsx",
+                        lineNumber: 132,
+                        columnNumber: 9
+                    }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         style: navLinks,
                         children: [
@@ -295,16 +394,16 @@ function HistovicMasterApp() {
                                     setFiles([]);
                                     setSuccess(false);
                                 },
-                                style: mode === m ? activeTab : inactiveTab,
+                                style: mode === m ? activeTab : tab,
                                 children: t[m].toUpperCase()
                             }, m, false, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 128,
+                                lineNumber: 136,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 126,
+                        lineNumber: 134,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -312,64 +411,53 @@ function HistovicMasterApp() {
                         children: [
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 style: dropZone,
-                                onClick: ()=>document.getElementById('fi')?.click(),
+                                onClick: ()=>document.getElementById('file-input')?.click(),
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                        style: {
-                                            fontSize: '50px',
-                                            marginBottom: '10px'
-                                        },
+                                        style: uploadIcon,
                                         children: processing ? '⚙️' : '📤'
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 140,
+                                        lineNumber: 144,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h3", {
                                         style: {
-                                            color: '#1E293B',
-                                            margin: 0
+                                            margin: '10px 0',
+                                            color: '#1E293B'
                                         },
-                                        children: files.length > 0 ? `${files.length} Selected` : t.select
+                                        children: files.length > 0 ? `${files.length} Files Selected` : t.select
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 141,
+                                        lineNumber: 145,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
-                                        id: "fi",
+                                        id: "file-input",
                                         type: "file",
                                         hidden: true,
                                         multiple: mode === 'merge',
-                                        accept: ".pdf",
                                         onChange: (e)=>setFiles(Array.from(e.target.files || []))
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 142,
+                                        lineNumber: 148,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 139,
+                                lineNumber: 143,
                                 columnNumber: 11
                             }, this),
                             mode === 'split' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                style: {
-                                    marginTop: '15px',
-                                    textAlign: 'left'
-                                },
+                                style: configArea,
                                 children: [
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("label", {
-                                        style: {
-                                            fontSize: '12px',
-                                            fontWeight: 'bold',
-                                            color: '#64748B'
-                                        },
-                                        children: "Page Range (e.g. 1-3, 5):"
+                                        style: label,
+                                        children: "Extract Pages (e.g., 1-3, 5):"
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 147,
+                                        lineNumber: 153,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
@@ -378,23 +466,23 @@ function HistovicMasterApp() {
                                         onChange: (e)=>setPageRange(e.target.value)
                                     }, void 0, false, {
                                         fileName: "[project]/app/page.tsx",
-                                        lineNumber: 148,
+                                        lineNumber: 154,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 146,
+                                lineNumber: 152,
                                 columnNumber: 13
                             }, this),
                             files.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                 onClick: processPDF,
                                 disabled: processing,
                                 style: primaryBtn,
-                                children: processing ? '...' : t.action.toUpperCase()
+                                children: processing ? 'ENGINE PROCESSING...' : t.action.toUpperCase()
                             }, void 0, false, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 153,
+                                lineNumber: 159,
                                 columnNumber: 13
                             }, this),
                             success && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -405,144 +493,208 @@ function HistovicMasterApp() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/page.tsx",
-                                lineNumber: 158,
+                                lineNumber: 164,
                                 columnNumber: 23
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 138,
+                        lineNumber: 142,
+                        columnNumber: 9
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        style: adDivider
+                    }, void 0, false, {
+                        fileName: "[project]/app/page.tsx",
+                        lineNumber: 167,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         style: adSpace,
-                        children: "HISTOVIC AD PLACEMENT"
-                    }, void 0, false, {
+                        children: [
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
+                                style: {
+                                    fontSize: '10px',
+                                    color: '#CBD5E1',
+                                    marginBottom: '5px'
+                                },
+                                children: "SPONSORED CONTENT"
+                            }, void 0, false, {
+                                fileName: "[project]/app/page.tsx",
+                                lineNumber: 169,
+                                columnNumber: 11
+                            }, this),
+                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                style: adPlaceholder,
+                                children: "ADVERTISEMENT PLACEMENT"
+                            }, void 0, false, {
+                                fileName: "[project]/app/page.tsx",
+                                lineNumber: 170,
+                                columnNumber: 11
+                            }, this)
+                        ]
+                    }, void 0, true, {
                         fileName: "[project]/app/page.tsx",
-                        lineNumber: 160,
+                        lineNumber: 168,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/page.tsx",
-                lineNumber: 125,
+                lineNumber: 130,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/page.tsx",
-        lineNumber: 117,
+        lineNumber: 111,
         columnNumber: 5
     }, this);
 }
-// --- FIXED STYLES (No shorthand conflicts) ---
+// --- RESTORED ORIGINAL STYLES ---
 const shell = {
     backgroundColor: '#FFFBF5',
     minHeight: '100vh',
-    fontFamily: 'sans-serif'
+    color: '#1E293B',
+    fontFamily: 'system-ui, sans-serif'
 };
 const navbar = {
     display: 'flex',
     justifyContent: 'space-between',
-    padding: '20px 40px',
+    alignItems: 'center',
+    padding: '20px 60px',
     backgroundColor: '#FFFFFF',
-    borderBottomWidth: '1px',
-    borderBottomStyle: 'solid',
-    borderBottomColor: '#EEEEEE'
+    borderBottom: '2px solid #F1F5F9'
 };
 const logo = {
-    fontSize: '20px',
-    fontWeight: 900
+    fontSize: '24px',
+    fontWeight: 900,
+    letterSpacing: '1px'
 };
 const langPicker = {
-    padding: '5px',
-    borderRadius: '8px',
-    borderStyle: 'solid',
-    borderWidth: '1px',
-    borderColor: '#DDDDDD'
+    padding: '8px',
+    borderRadius: '10px',
+    border: '1px solid #E2E8F0',
+    fontWeight: 'bold',
+    cursor: 'pointer'
 };
 const contentBody = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    paddingTop: '40px'
+    paddingTop: '60px',
+    paddingBottom: '60px'
+};
+const heroText = {
+    fontSize: '56px',
+    fontWeight: 900,
+    color: '#0F172A',
+    margin: 0
+};
+const subHero = {
+    color: '#64748B',
+    marginBottom: '40px',
+    fontSize: '18px'
 };
 const navLinks = {
     display: 'flex',
     gap: '8px',
-    marginBottom: '20px'
+    marginBottom: '30px'
 };
-const inactiveTab = {
-    backgroundColor: 'transparent',
-    borderStyle: 'none',
+const tab = {
+    background: 'transparent',
+    border: 'none',
     color: '#64748B',
     cursor: 'pointer',
     fontWeight: 700,
-    padding: '10px 15px',
-    borderRadius: '10px'
+    fontSize: '12px',
+    padding: '10px 16px',
+    borderRadius: '12px'
 };
 const activeTab = {
-    backgroundColor: '#E11D48',
-    borderStyle: 'none',
+    ...tab,
     color: '#FFFFFF',
-    cursor: 'pointer',
-    fontWeight: 700,
-    padding: '10px 15px',
-    borderRadius: '10px'
+    backgroundColor: '#E11D48'
 };
 const uploadCard = {
     backgroundColor: '#FFFFFF',
-    borderRadius: '24px',
-    padding: '30px',
-    width: '90%',
-    maxWidth: '500px',
+    borderRadius: '32px',
+    padding: '40px',
+    width: '100%',
+    maxWidth: '640px',
     textAlign: 'center',
-    boxShadow: '0 10px 30px rgba(0,0,0,0.05)'
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)',
+    border: '1px solid #F1F5F9'
 };
 const dropZone = {
-    borderStyle: 'dashed',
-    borderWidth: '2px',
-    borderColor: '#CBD5E1',
-    borderRadius: '20px',
-    padding: '50px 20px',
+    border: '3px dashed #CBD5E1',
+    borderRadius: '24px',
+    padding: '80px 20px',
     cursor: 'pointer',
     backgroundColor: '#F8FAFC'
 };
-const input = {
-    width: '100%',
-    marginTop: '5px',
-    padding: '12px',
-    borderRadius: '10px',
-    borderStyle: 'solid',
-    borderWidth: '1px',
-    borderColor: '#DDDDDD'
+const uploadIcon = {
+    fontSize: '50px',
+    marginBottom: '10px'
 };
 const primaryBtn = {
-    marginTop: '20px',
+    marginTop: '32px',
     width: '100%',
-    padding: '18px',
+    padding: '22px',
     backgroundColor: '#E11D48',
     color: '#FFFFFF',
-    borderStyle: 'none',
-    borderRadius: '15px',
+    border: 'none',
+    borderRadius: '18px',
     fontWeight: 800,
-    cursor: 'pointer'
+    fontSize: '18px',
+    cursor: 'pointer',
+    boxShadow: '0 10px 15px -3px rgba(225, 29, 72, 0.3)'
+};
+const configArea = {
+    marginTop: '24px',
+    textAlign: 'left'
+};
+const label = {
+    display: 'block',
+    fontSize: '13px',
+    color: '#475569',
+    marginBottom: '8px',
+    fontWeight: 700
+};
+const input = {
+    width: '100%',
+    padding: '14px',
+    borderRadius: '12px',
+    backgroundColor: '#F1F5F9',
+    border: '1px solid #E2E8F0',
+    color: '#1E293B',
+    outline: 'none'
 };
 const successMsg = {
-    marginTop: '15px',
+    marginTop: '20px',
     color: '#059669',
     fontWeight: 800
 };
+const adDivider = {
+    width: '100px',
+    height: '2px',
+    backgroundColor: '#F1F5F9',
+    margin: '60px 0 20px 0'
+};
 const adSpace = {
-    marginTop: '40px',
-    padding: '20px',
+    textAlign: 'center'
+};
+const adPlaceholder = {
+    width: '320px',
+    height: '100px',
+    backgroundColor: '#FFFFFF',
+    border: '1px dashed #E2E8F0',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     color: '#CBD5E1',
-    borderStyle: 'dashed',
-    borderWidth: '1px',
-    borderColor: '#CBD5E1',
-    width: '300px',
-    textAlign: 'center',
-    fontSize: '10px'
+    fontSize: '12px'
 };
 }),
 ];
