@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 
-// This metadata helps with SEO and how the tab looks in the browser
 export const metadata: Metadata = {
   title: "Histovic PDF Pro",
-  description: "Secure, local-first PDF tools by Histovic",
+  description: "By Akena Hillen",
 };
 
 export default function RootLayout({
@@ -13,9 +12,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body style={{ margin: 0, padding: 0, backgroundColor: '#020617' }}>
-        {children}
-      </body>
+      <body style={{ margin: 0, padding: 0 }}>{children}</body>
     </html>
   );
 }

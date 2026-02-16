@@ -1,134 +1,132 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { AdMob, BannerAdPosition, BannerAdSize, BannerAdOptions, AdOptions } from '@capacitor-community/admob';
+import { FilePicker } from '@capawesome/capacitor-file-picker';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { FileOpener } from '@capacitor-community/file-opener';
 import { PDFDocument } from 'pdf-lib';
 
-const translations: any = {
-  en: { merge: "Merge", split: "Split", compress: "Compress", image: "To Image", text: "To Text", action: "Convert Now", select: "Select Files", success: "Success! File Ready" },
-  // ... (Other 10 languages are preserved in the background for ASO)
-};
-
 export default function HistovicPdfPro() {
-  const [lang, setLang] = useState('en');
-  const [files, setFiles] = useState<File[]>([]);
-  const [processing, setProcessing] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [mode, setMode] = useState<'merge' | 'split' | 'compress' | 'image' | 'text'>('merge');
-  const [pageRange, setPageRange] = useState("1-2");
-  const [showAbout, setShowAbout] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-  const t = translations[lang] || translations['en'];
-
-  const processPDF = async () => {
-    setProcessing(true);
-    try {
-      const pdfDoc = await PDFDocument.create();
-      const srcBuffer = await files[0].arrayBuffer();
-      const src = await PDFDocument.load(srcBuffer);
-      
-      if (mode === 'merge') {
-        for (const file of files) {
-          const doc = await PDFDocument.load(await file.arrayBuffer());
-          const pages = await pdfDoc.copyPages(doc, doc.getPageIndices());
-          pages.forEach(p => pdfDoc.addPage(p));
-        }
-      } else if (mode === 'split') {
-        const indices: number[] = [];
-        pageRange.split(',').forEach(p => {
-          if (p.includes('-')) {
-            const [s, e] = p.split('-').map(n => parseInt(n.trim()) - 1);
-            for (let i = s; i <= e; i++) indices.push(i);
-          } else { indices.push(parseInt(p.trim()) - 1); }
-        });
-        const pages = await pdfDoc.copyPages(src, indices.filter(i => i >= 0 && i < src.getPageCount()));
-        pages.forEach(p => pdfDoc.addPage(p));
-      } else {
-        const pages = await pdfDoc.copyPages(src, src.getPageIndices());
-        pages.forEach(p => pdfDoc.addPage(p));
+  useEffect(() => {
+    const initAds = async () => {
+      try {
+        await AdMob.initialize();
+        showBanner();
+      } catch (e) {
+        console.warn("AdMob safe-skip", e);
       }
-      const bytes = await pdfDoc.save({ useObjectStreams: true });
-      const blob = new Blob([bytes.buffer], { type: 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a'); a.href = url; a.download = `Histovic_${mode}.pdf`; a.click();
-      setSuccess(true);
-      setFiles([]);
-    } catch (e) { alert("Error processing file."); } finally { setProcessing(false); }
+    };
+    initAds();
+  }, []);
+
+  const showBanner = async () => {
+    try {
+      const options: BannerAdOptions = {
+        adId: 'ca-app-pub-3940256099942544/6300978111', 
+        adSize: BannerAdSize.ADAPTIVE_BANNER,
+        position: BannerAdPosition.BOTTOM_CENTER,
+        margin: 60,
+        isTesting: true
+      };
+      await AdMob.showBanner(options);
+    } catch (e) { console.log("Banner hidden"); }
+  };
+
+  const handleAction = async () => {
+    try {
+      setIsProcessing(true);
+      const pickOptions: any = { types: ['application/pdf'], multiple: mode === 'merge', readData: true };
+      const result = await FilePicker.pickFiles(pickOptions);
+      
+      if (!result.files || result.files.length === 0) return;
+
+      if (mode === 'merge' && result.files.length > 1) {
+        const mergedPdf = await PDFDocument.create();
+        for (const file of result.files) {
+          const donorPdf = await PDFDocument.load(file.data!);
+          const pages = await mergedPdf.copyPages(donorPdf, donorPdf.getPageIndices());
+          pages.forEach(page => mergedPdf.addPage(page));
+        }
+        const pdfBase64 = await mergedPdf.saveAsBase64();
+        await Filesystem.writeFile({
+          path: `Merged_${Date.now()}.pdf`,
+          data: pdfBase64,
+          directory: Directory.Documents
+        });
+        alert("Success! Merged file saved to Documents.");
+      } else {
+        const file = result.files[0];
+        const tempPath = `preview_${Date.now()}.pdf`;
+        await Filesystem.writeFile({ path: tempPath, data: file.data || "", directory: Directory.Cache });
+        const uriResult = await Filesystem.getUri({ path: tempPath, directory: Directory.Cache });
+        await FileOpener.open({ filePath: uriResult.uri, contentType: 'application/pdf' });
+      }
+    } catch (e) { console.error(e); } finally { setIsProcessing(false); }
   };
 
   return (
-    <div style={shell}>
+    <div style={container}>
+      {/* NAVBAR FROM SCREENSHOT_66 */}
       <header style={navbar}>
-        <div style={logo}>HISTOVIC <span style={{color: '#E11D48'}}>PRO</span></div>
-        <div style={{display: 'flex', gap: '20px', alignItems: 'center'}}>
-          <button onClick={() => setShowAbout(!showAbout)} style={navTextBtn}>About</button>
-          <button style={navTextBtn}>Login</button>
-          <button style={signUpBtn}>Sign up</button>
+        <div style={brandGroup}>
+            <div style={logoIcon}>H</div>
+            <div style={logoText}>HISTOVIC <span style={{color: '#E11D48'}}>PRO</span></div>
         </div>
+        <div style={langBadge}>EN ▾</div>
       </header>
 
-      <div style={contentBody}>
-        <h1 style={heroText}>{mode.toUpperCase()} PDF</h1>
-        <p style={subHero}>The fastest local-first PDF tools for your everyday use...</p>
+      <main style={mainContent}>
+        {/* CENTERED HERO SECTION */}
+        <div style={heroSection}>
+            <h1 style={heroTitle}>{mode === 'image' ? 'TO IMAGE' : mode === 'text' ? 'TO TEXT' : mode.toUpperCase() + ' PDF'}</h1>
+            <p style={heroSub}>The fastest local-first PDF tools for Histovic Studios.</p>
+        </div>
 
-        <div style={navLinks}>
-          {(['merge', 'split', 'compress', 'image', 'text'] as const).map(m => (
-            <button key={m} onClick={() => {setMode(m); setFiles([]); setSuccess(false);}} style={mode === m ? activeTab : tab}>
-              {t[m].toUpperCase()}
+        {/* TOOL TOGGLES FROM SCREENSHOT_66 */}
+        <div style={toolToggleContainer}>
+          {(['merge', 'split', 'compress', 'image', 'text'] as const).map((m) => (
+            <button key={m} onClick={() => setMode(m)} style={mode === m ? activeToggle : inactiveToggle}>
+              {m === 'image' ? 'TO IMAGE' : m === 'text' ? 'TO TEXT' : m.toUpperCase()}
             </button>
           ))}
         </div>
 
-        <div style={uploadCard}>
-          <div style={dropZone} onClick={() => document.getElementById('fi')?.click()}>
-            <div style={{fontSize: '50px', marginBottom: '10px'}}>{processing ? '⚙️' : '📤'}</div>
-            <h3 style={{color: '#1E293B'}}>{files.length > 0 ? `${files.length} Selected` : t.select}</h3>
-            <input id="fi" type="file" hidden multiple={mode === 'merge'} onChange={(e) => setFiles(Array.from(e.target.files || []))} />
+        {/* THE CENTERED SELECTION BOX */}
+        <div style={uploadWrapper}>
+          <div style={dropZone} onClick={handleAction}>
+            <div style={uploadIconCircle}>
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E11D48" strokeWidth="2.5">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+            </div>
+            <h2 style={uploadText}>{isProcessing ? 'Processing...' : 'Select Files'}</h2>
           </div>
-
-          {mode === 'split' && (
-            <input style={input} value={pageRange} onChange={(e) => setPageRange(e.target.value)} placeholder="1-3, 5" />
-          )}
-
-          {files.length > 0 && (
-            <button onClick={processPDF} disabled={processing} style={primaryBtn}>
-              {processing ? '...' : t.action.toUpperCase()}
-            </button>
-          )}
-
-          {success && <div style={successMsg}>✨ {t.success}</div>}
         </div>
-
-    
-        <div style={adSpace}>ADVERTISEMENT PLACEMENT</div>
-      </div>
-
-      <footer style={footerStyle}>
-        Copy Right 2026, Histovic Inc.
-      </footer>
+        <div style={{height: '100px'}}></div>
+      </main>
     </div>
   );
 }
 
-// --- RESTORED ORIGINAL STYLES + NEW BUTTONS ---
-const shell: React.CSSProperties = { backgroundColor: '#FFFBF5', minHeight: '100vh', fontFamily: 'system-ui, sans-serif' };
-const navbar: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', padding: '20px 60px', backgroundColor: '#FFFFFF', borderBottom: '2px solid #F1F5F9', alignItems: 'center' };
-const logo: React.CSSProperties = { fontSize: '24px', fontWeight: 900, letterSpacing: '1px' };
-const navTextBtn: React.CSSProperties = { background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer', color: '#1E293B' };
-const signUpBtn: React.CSSProperties = { backgroundColor: '#E11D48', color: '#FFF', border: 'none', padding: '10px 20px', borderRadius: '10px', fontWeight: 'bold', cursor: 'pointer' };
-
-const contentBody: React.CSSProperties = { display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '60px' };
-const heroText: React.CSSProperties = { fontSize: '56px', fontWeight: 900, color: '#0F172A', margin: 0 };
-const subHero: React.CSSProperties = { color: '#64748B', marginBottom: '40px', fontSize: '18px' };
-const navLinks: React.CSSProperties = { display: 'flex', gap: '8px', marginBottom: '30px' };
-const tab: React.CSSProperties = { background: 'transparent', border: 'none', color: '#64748B', cursor: 'pointer', fontWeight: 700, fontSize: '12px', padding: '10px 16px', borderRadius: '12px' };
-const activeTab: React.CSSProperties = { ...tab, color: '#FFFFFF', backgroundColor: '#E11D48' };
-
-const uploadCard: React.CSSProperties = { backgroundColor: '#FFFFFF', borderRadius: '32px', padding: '40px', width: '100%', maxWidth: '640px', textAlign: 'center', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.05)', border: '1px solid #F1F5F9' };
-const dropZone: React.CSSProperties = { border: '3px dashed #CBD5E1', borderRadius: '24px', padding: '80px 20px', cursor: 'pointer', backgroundColor: '#F8FAFC' };
-const primaryBtn: React.CSSProperties = { marginTop: '32px', width: '100%', padding: '22px', backgroundColor: '#E11D48', color: '#FFFFFF', border: 'none', borderRadius: '18px', fontWeight: 800, fontSize: '18px', cursor: 'pointer' };
-const input: React.CSSProperties = { width: '100%', marginTop: '15px', padding: '14px', borderRadius: '12px', backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0' };
-const successMsg: React.CSSProperties = { marginTop: '20px', color: '#059669', fontWeight: 800 };
-const adSpace: React.CSSProperties = { marginTop: '40px', padding: '20px', color: '#CBD5E1', border: '1px dashed #CBD5E1', borderRadius: '12px', fontSize: '10px' };
-
-const aboutCard: React.CSSProperties = { marginTop: '20px', padding: '20px', backgroundColor: '#FFF', borderRadius: '20px', border: '1px solid #F1F5F9', maxWidth: '400px', textAlign: 'center' };
-const footerStyle: React.CSSProperties = { position: 'fixed', bottom: '20px', right: '40px', fontSize: '12px', color: '#64748B', fontWeight: 'bold' };
+// --- CSS REPLICATED FROM SCREENSHOT_66 ---
+const container: React.CSSProperties = { backgroundColor: '#FFFBFA', minHeight: '100vh', fontFamily: 'Inter, sans-serif', display: 'flex', flexDirection: 'column' };
+const navbar: React.CSSProperties = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 5%', backgroundColor: '#FFF' };
+const brandGroup: React.CSSProperties = { display: 'flex', alignItems: 'center', gap: '8px' };
+const logoIcon: React.CSSProperties = { backgroundColor: '#0F172A', color: '#FFF', width: '30px', height: '30px', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: '16px' };
+const logoText: React.CSSProperties = { fontSize: '18px', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.5px' };
+const langBadge: React.CSSProperties = { fontSize: '11px', fontWeight: 700, border: '1px solid #EEE', padding: '4px 10px', borderRadius: '6px' };
+const mainContent: React.CSSProperties = { flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '20px' };
+const heroSection: React.CSSProperties = { textAlign: 'center', marginBottom: '35px' };
+const heroTitle: React.CSSProperties = { fontSize: 'clamp(32px, 8vw, 48px)', fontWeight: 900, color: '#0F172A', margin: '0 0 10px 0' };
+const heroSub: React.CSSProperties = { fontSize: '14px', color: '#64748B', maxWidth: '300px' };
+const toolToggleContainer: React.CSSProperties = { display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '40px', justifyContent: 'center' };
+const inactiveToggle: React.CSSProperties = { padding: '10px 18px', fontSize: '11px', fontWeight: 700, color: '#64748B', background: 'none', border: 'none', cursor: 'pointer' };
+const activeToggle: React.CSSProperties = { ...inactiveToggle, backgroundColor: '#E11D48', color: '#FFF', borderRadius: '20px' };
+const uploadWrapper: React.CSSProperties = { width: '100%', maxWidth: '550px' };
+const dropZone: React.CSSProperties = { backgroundColor: '#FFF', border: '2px dashed #CBD5E1', borderRadius: '24px', padding: '70px 20px', textAlign: 'center', cursor: 'pointer', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' };
+const uploadIconCircle: React.CSSProperties = { backgroundColor: '#FFF1F2', padding: '15px', borderRadius: '50%', marginBottom: '15px', display: 'inline-block' };
+const uploadText: React.CSSProperties = { fontSize: '20px', fontWeight: 800, color: '#0F172A', margin: 0 };
